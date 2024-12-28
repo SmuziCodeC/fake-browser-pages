@@ -1,0 +1,322 @@
+<html><head>
+  <meta charset="utf-8">
+  <title>История</title>
+
+  <!-- Stylesheets -->
+  <style role="text_defaults">
+    /* Copyright 2014 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is dynamically processed by a C++ data source handler to fill in
+ * some per-platform/locale styles that dramatically alter the page. This is
+ * done to reduce flicker, as JS may not run before the page is rendered.
+ *
+ * There are two ways to include this stylesheet:
+ * 1. via its chrome://resources/ URL in HTML, i.e.:
+ *
+ *   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+ *
+ * 2. via the webui::AppendWebUICSSTextDefaults() method to directly append it
+ * to an HTML string.
+ * Otherwise its placeholders won't be expanded. */
+
+body {
+  font-family: 'Yandex Sans Text', Segoe UI, sans-serif;
+  font-size: 75%;
+
+  --default-font-family: 'Yandex Sans Text', Segoe UI, sans-serif;
+
+  /* Specifies text color on the page. */
+  --text-color: black;
+
+  /* The same as `--text-color` but in rgb-format.
+     This var allows us to refer to the color defined in `--text-color` via css
+     function, i.e. `rgba()`. */
+  --text-color-rgb: 0, 0, 0;
+}
+
+button {
+  font-family: 'Yandex Sans Text', Segoe UI, sans-serif;
+}
+</style>
+  <style role="settings">/* Copyright 2019 Yandex LLC. All rights reserved. */
+
+html, body {
+  min-height: 100%;
+}
+
+body {
+  /* Settings background color is used on some other pages, too. */
+  /* Don't forget to change it everywhere. */
+  --settings-background: #f2f1f0;
+  --settings-menu-background-color-selected: rgba(0, 0, 0, 0.07);
+  --settings-menu-text-color: #313131;
+  --settings-menu-text-color-hover: black;
+  --settings-menu-text-color-selected: black;
+
+  --settings-header-height: 77px;
+  --settings-header-z-index: 1000;
+
+  color: var(--ya-color-text-primary);
+  font-family: var(--default-font-family);
+  font-size: 15px;
+
+  margin: 0;
+  padding: var(--settings-header-height) 0 8px calc(100vw - 100%);
+  box-sizing: border-box;
+
+  background: var(--settings-background);
+}
+
+body:not([legacy-page]).unloading {
+  overflow: hidden;
+}
+
+settings-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  min-width: 100vw;
+  height: var(--settings-header-height);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  background: var(--settings-background);
+  user-select: none;
+  z-index: var(--settings-header-z-index);
+}
+
+settings-menu::before,
+settings-menu::after {
+  content: '';
+  flex: 1 0 auto;
+}
+
+body[legacy-page] settings-menu {
+  border-bottom: rgba(0, 0, 0, 0) 1px solid;
+  height: calc(var(--settings-header-height) - 1px);  /* 1px is for border. */
+}
+
+body[legacy-page] settings-menu.legacy-page-scrolled {
+  border-bottom-color: rgba(0, 0, 0, 0.09);
+}
+
+settings-menu-item {
+  flex: 0 0 auto;
+  display: inline-block;
+  height: 23px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  cursor: pointer;
+  color: var(--settings-menu-text-color);
+  font-size: 13px;
+  line-height: 23px;
+  transition: color 0.2s ease-in;
+  border-radius: 12px;
+}
+
+settings-menu-item:focus {
+  outline: none;
+}
+
+settings-menu-item:focus.keyboard-selected {
+  box-shadow: var(--ya-color-applied-focused-box-shadow);
+}
+
+settings-menu-item:hover {
+  color: var(--settings-menu-text-color-hover);
+}
+
+settings-menu-item[selected] {
+  cursor: default;
+  color: var(--settings-menu-text-color-selected);
+  background: var(--settings-menu-background-color-selected);
+  box-shadow: inset 0 1px rgba(0, 0, 0, 0.07);
+  pointer-events: none;
+}
+
+body[legacy-page] settings-menu-item:not([selected]) {
+  pointer-events: auto;
+}
+
+/* Switching animation. */
+body:not([legacy-page]) :-webkit-any(
+    bookmarks-page,
+    downloads-page,
+    history-page,
+    options-page,
+    passman-manager-page,
+    passman-page,
+    personal-page,
+    protect-page,
+    tune-page) {
+  animation: fade-in 200ms forwards;
+}
+
+body:not([legacy-page]).unloading :-webkit-any(
+    bookmarks-page,
+    downloads-page,
+    history-page,
+    options-page,
+    passman-manager-page,
+    passman-page,
+    personal-page,
+    protect-page,
+    tune-page) {
+  /* Update settings_menu.js if you are going to change animation timings. */
+  animation: fade-out var(--settings-page-fadeout-duration, 100ms) forwards;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; transform: translateX(0px); }
+  to { opacity: 0; transform: translateX(-20px); }
+}
+
+/* Explainer: https://allyjs.io/tutorials/hiding-elements.html#how-to-hide-elements-visually */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+@media (prefers-color-scheme: dark) {
+  [dark-theme-feature] {
+    --settings-background: black;
+    --settings-menu-background-color-selected: #28282E;
+    --settings-menu-text-color: rgba(255, 255, 255, 0.45);
+    --settings-menu-text-color-hover: rgba(255, 255, 255, 0.87);
+    --settings-menu-text-color-selected: rgba(255, 255, 255, 0.87);
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar {
+    width: 18px;
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    border: 5px solid transparent;
+    border-radius: 10px;
+    min-height: 50px;
+    background-color: rgba(255, 255, 255, 0.23);
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar-thumb:active {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+    display: none;
+  }
+
+  [dark-theme-feature]::-webkit-scrollbar-corner {
+    background-color: transparent;
+  }
+}</style>
+
+  <style role="yandexsans-font">/* Copyright 2022 Yandex LLC. All rights reserved. */
+
+
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: normal;
+  font-weight: 300;
+  src: url(chrome://resources/yandex/fonts/ys_text_light.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: italic;
+  font-weight: 300;
+  src: url(chrome://resources/yandex/fonts/ys_text_light_italic.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: normal;
+  font-weight: 400;
+  src: url(chrome://resources/yandex/fonts/ys_text_regular.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: italic;
+  font-weight: 400;
+  src: url(chrome://resources/yandex/fonts/ys_text_regular_italic.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: normal;
+  font-weight: 500;
+  src: url(chrome://resources/yandex/fonts/ys_text_medium.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: italic;
+  font-weight: 500;
+  src: url(chrome://resources/yandex/fonts/ys_text_medium_italic.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: normal;
+  font-weight: 700;
+  src: url(chrome://resources/yandex/fonts/ys_text_bold.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: italic;
+  font-weight: 700;
+  src: url(chrome://resources/yandex/fonts/ys_text_bold_italic.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Yandex Sans Text';
+  font-style: normal;
+  font-weight: 900;
+  src: url(chrome://resources/yandex/fonts/ys_text_black.woff2) format('woff2');
+}</style>
+
+</head>
+<body dark-theme-feature="">
+  <perf-metrics-tracker page-name="History"></perf-metrics-tracker>
+
+  <h1 class="visually-hidden">История</h1>
+
+  <settings-menu>
+    <settings-menu-item page="bookmarks">Закладки</settings-menu-item>
+    <settings-menu-item page="downloads">Загрузки</settings-menu-item>
+    <settings-menu-item page="history" selected="">История</settings-menu-item>
+    <settings-menu-item page="tune">Расширения</settings-menu-item>
+    <settings-menu-item page="settings">Настройки</settings-menu-item>
+    <settings-menu-item page="protect">Безопасность</settings-menu-item>
+    <settings-menu-item page="personal/cards">Яндекс ID</settings-menu-item>
+    <settings-menu-item page="devices-tabs">Другие устройства</settings-menu-item>
+  </settings-menu>
+
+  <history-page></history-page>
+
+  <script type="module" src="history_polymer.js"></script>
+
+
+</body></html>
